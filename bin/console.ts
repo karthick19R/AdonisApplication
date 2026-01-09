@@ -10,7 +10,7 @@
 | has "options.startApp" flag set to true.
 |
 */
-
+console.log("console started")
 import 'reflect-metadata'
 import { Ignitor, prettyPrintError } from '@adonisjs/core'
 
@@ -45,4 +45,3 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     process.exitCode = 1
     prettyPrintError(error)
   })
-console.log("console started")

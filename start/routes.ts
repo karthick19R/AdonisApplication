@@ -25,7 +25,7 @@ router.resource('/users', UsersController)
 
 
 router.group(()=>{
-  router.resource('/posts','#controllers/posts_controller'),
-  router.get('/posts/userid/:id',[postcontroller,'showbySender']).middleware([middleware.jwtauthen(),middleware.authen()])
+  router.resource('/posts','#controllers/posts_controller')
+  router.get('/posts/userid/:id',[postcontroller,'showbySender'])
   router.get('/posts/filter',[postcontroller,'getbydateandsender'])
-}).middleware([middleware.logger(),middleware.requestSizeLimiter()])
+}).middleware([middleware.logger(),middleware.requestSizeLimiter(),middleware.postAuthenUser()])

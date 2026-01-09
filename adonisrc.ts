@@ -1,6 +1,8 @@
 import { defineConfig } from '@adonisjs/core/app'
 
+  console.log("adonisrc")
 export default defineConfig({
+
   /*
   |--------------------------------------------------------------------------
   | Experimental flags

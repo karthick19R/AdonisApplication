@@ -67,11 +67,18 @@ export default class UsersController {
         const user = await User.findBy('email',email)
         if(!user)return "User not found"
         const res= await User.verifyCredentials(email,password)
-       // console.log(res.id)
+        console.log(`user :${user}`)
+        const token = await User.accessTokens.create(user)
+
+        console.log(`token :${token.value!.release()}`)
         if(!res) return "invalid credentials"
-        const token = JwtService.sign({id : res.id ,email})
-        console.log(token)
-        return response.json({status :"Logged in successful",token}) 
+        //creating Jwt Token
+        const jwttoken = JwtService.sign({id : res.id ,email})
+        console.log(jwttoken)
+        return response.json({status :"Logged in successful",
+            jwttoken,
+            oat : token.value!.release()
+        }) 
     }
     
 }
