@@ -10,22 +10,32 @@
 import router from '@adonisjs/core/services/router'
 import UsersController from '#controllers/users_controller'
 import postcontroller from '#controllers/posts_controller'
+import AdminController from '#controllers/admin_controller'
 import { middleware } from './kernel.js'
-router.where('id', router.matchers.number())
+//router.where('id', router.matchers.number())
 
 router.get('/users/email/:email',[UsersController,'getUserByEmail']).
-middleware([middleware.logger(), middleware.requestSizeLimiter()])
-.where('email', /^[\w.-]+@[\w.-]+\.\w+$/)
+         middleware([middleware.logger(), middleware.requestSizeLimiter()])
+        .where('email', /^[\w.-]+@[\w.-]+\.\w+$/)
 
+router.get('/admin/posts',[AdminController,'getallpost'])
 
-router.post('/login',[UsersController,'login']).middleware([middleware.logger(), middleware.requestSizeLimiter()])
+router.resource('/admin',AdminController).apiOnly()
+      .middleware('*',[middleware.logger(),middleware.requestSizeLimiter()])
+
+router.post('/login',[UsersController,'login'])
+      .middleware([middleware.logger(), middleware.requestSizeLimiter()])
+
 router.resource('/users', UsersController)
-  .apiOnly()
-  .middleware('*', [middleware.logger(), middleware.requestSizeLimiter()]).middleware(['show', 'update', 'destroy'], [middleware.jwtauthen(),middleware.authen()])
+    .apiOnly()
+    .middleware('*', [middleware.logger(), middleware.requestSizeLimiter()])
+    .middleware(['show', 'update', 'destroy'], [middleware.jwtauthen(),middleware.authen()])
 
 
 router.group(()=>{
-  router.resource('/posts','#controllers/posts_controller')
-  router.get('/posts/userid/:id',[postcontroller,'showbySender'])
-  router.get('/posts/filter',[postcontroller,'getbydateandsender'])
-}).middleware([middleware.logger(),middleware.requestSizeLimiter(),middleware.postAuthenUser()])
+     
+      router.get('/posts/userid/:id',[postcontroller,'showbyReceiver'])
+      router.resource('/posts','#controllers/posts_controller')
+      router.get('/posts/filter/',[postcontroller,'getbydateandsender'])
+    }).middleware([middleware.logger(),middleware.requestSizeLimiter(),middleware.postAuthenUser()]).where('id', router.matchers.number())
+

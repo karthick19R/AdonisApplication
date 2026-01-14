@@ -2,7 +2,11 @@ import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import { JwtService } from '#services/jwt_service'
 import User from '#models/user'
-
+declare module '@adonisjs/core/http' {
+  interface HttpContext {
+    userid?: number
+  }
+}
 interface JwtPayload{
   id :number
   email:string
@@ -30,8 +34,8 @@ export default class JwtauthenMiddleware {
       //const {email} = payload
       console.log(payload.email)
       const user = await User.findByOrFail('email', payload.email)
-      console.log(user)
-      ctx.userid = user.id
+      console.log("User data in jwtauthen middleware : ",user)
+      ctx.userid = user.$attributes.id
     } catch (err) {
       console.log('Jwt Authentication middleware failed')
       return ctx.response.status(500).json({

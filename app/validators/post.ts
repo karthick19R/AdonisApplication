@@ -38,3 +38,10 @@ export const postDeleteValidator = vine.compile(
   })
     
 )
+export const postupdatevalidator = vine.compile(
+  vine.object({
+    content : vine.string().escape().minLength(1)
+  }
+
+  )
+)

@@ -5,9 +5,9 @@ export default class UserAuthenMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     const id = ctx.params.id
     console.log("Inside User Id verification Auth middleware")
-    console.log(id)
-    console.log(ctx.userid)
-    if(!(id === ctx.userid)){
+    //console.log(id)
+    //console.log(ctx.userid)
+    if(!(id == ctx.userid)){
       return ctx.response.status(401).json({
         status :"failed",
         message : "You Dont have the Access"
