@@ -1,17 +1,16 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'admins'
+  protected tableName = 'posts'
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.renameColumn('name','fullName')
+      table.integer('senderid').unsigned().alter()
+      table.integer('receiverid').unsigned().alter()
     })
   }
 
   async down() {
-    this.schema.alterTable(this.tableName,(table)=>{
-      table.renameColumn('fullName','name')
-    })
+    
   }
 }

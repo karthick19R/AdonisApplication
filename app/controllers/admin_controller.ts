@@ -11,10 +11,11 @@ export default class AdminController {
     public async store({request,response}:HttpContext){
         const V_data = await request.validateUsing(signupvalidator)
         const user = await Admin.create(V_data)
-        return response.json({
+        return {
+            success :true,
             status :"Admin Addded Successfully",
             data : user
-        })
+        }
     }
     public async update({request,response,params}:HttpContext){
         const validId = await adminIdValidator.validate(params)
@@ -22,19 +23,20 @@ export default class AdminController {
         const v_data = await request.validateUsing(updateuserValidator)
         user.merge(v_data)
         await user.save()
-        return response.json({
+        return {
+            success :true,
             status :"Details updated successfully",
             data : user
-        })
+        }
     }
     public async destroy({params,response}:HttpContext){
-       // const v_id = await checkid.validate(params)
         const v_id = await adminIdValidator.validate(params)
         const user = await Admin.findByOrFail(v_id)
         user.delete()
-        response.json({
+        return {
+            success : true,
             status : "Deleted successfully",
-        })
+        }
     }
     public async getallpost({}:HttpContext){
         return Post.all()

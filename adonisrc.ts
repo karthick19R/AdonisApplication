@@ -1,8 +1,7 @@
 import { defineConfig } from '@adonisjs/core/app'
 
-console.log("adonisrc")
+console.log('adonisrc')
 export default defineConfig({
-
   /*
   |--------------------------------------------------------------------------
   | Experimental flags
@@ -17,7 +16,10 @@ export default defineConfig({
     mergeMultipartFieldsAndFiles: true,
     shutdownInReverseOrder: true,
   },
-
+   directories :{
+    "repositories" :"app/repositories",
+    "domains" :"app/domains"
+   },
   /*
   |--------------------------------------------------------------------------
   | Commands
@@ -28,10 +30,9 @@ export default defineConfig({
   |
   */
   commands: [() => import('@adonisjs/core/commands'), () => import('@adonisjs/lucid/commands'), () => import('@adonisjs/bouncer/commands')],
-  commandsAliases: {
-    "controller": 'make:controller'
-
-  },
+  // commandsAliases: {
+  //   controller: 'make:controller'
+  // },
   /*
   |--------------------------------------------------------------------------
   | Service providers

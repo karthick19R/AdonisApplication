@@ -44,6 +44,6 @@ export const middleware = router.named({
   jwtauthen: () => import('#middleware/jwtauthen_middleware'),
   logger: () => import('#middleware/logger_middleware'),
   requestSizeLimiter: () => import('#middleware/request_size_limiter_middleware'),
-  auth: () => import('#middleware/auth_middleware')
+  //auth: () => import('#middleware/auth_middleware')
 })
 console.log("kernel started")

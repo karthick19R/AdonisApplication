@@ -5,7 +5,7 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.renameColumn('fullname','full_name')
+      table.renameColumn('fullName','full_name')
     })
   }
 

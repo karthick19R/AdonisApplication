@@ -5,3 +5,4 @@ export const adminIdValidator = vine.compile(
     id: vine.string().uuid({ version: [4] }),
   })
 )
+

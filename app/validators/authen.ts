@@ -7,4 +7,6 @@ vine.object(
     }
 )
 )
+console.log()
+console.log()
 

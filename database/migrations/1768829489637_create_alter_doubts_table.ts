@@ -5,13 +5,13 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.renameColumn('name','fullName')
+    table.integer('id').alter()
     })
   }
 
   async down() {
-    this.schema.alterTable(this.tableName,(table)=>{
-      table.renameColumn('fullName','name')
+    this.schema.alterTable(this.tableName, (table) => {
+    table.uuid('id').alter()
     })
   }
 }

@@ -18,7 +18,23 @@ const dbConfig = defineConfig({
         paths: ['database/migrations'],
       },
     },
+    mysql :{
+      client : 'mysql2',
+      connection: {
+        host: env.get('MYSQL_DB_HOST'),
+        port: Number(env.get('MYSQL_DB_PORT')),
+        user: env.get('MYSQL_DB_USER'),
+        password: env.get('MYSQL_DB_PASSWORD'),
+        database: env.get('MYSQL_DB_DATABASE'),
+      },
+      migrations: {
+        naturalSort: true,
+        paths: ['database/mysql/migrations'],
+      },
+    }
   },
-})
+},
+)
+
 
 export default dbConfig

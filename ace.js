@@ -19,9 +19,11 @@
 /**
  * Register hook to process TypeScript files using ts-node
  */
+import { log } from 'node:console'
 import 'ts-node-maintained/register/esm'
 
 /**
  * Import ace console entrypoint
  */
+log("ace.js")
 await import('./bin/console.js')

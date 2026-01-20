@@ -11,7 +11,6 @@
 | templates.
 |
 */
-
 import { Bouncer } from '@adonisjs/bouncer'
 import User from '#models/user'
 import Post from '#models/post'

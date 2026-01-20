@@ -8,18 +8,44 @@ import {
   postDeleteValidator,
 } from '../validators/post.js'
 export default class PostsController {
-  public async index({ response, auth }: HttpContext) {
-    // console.log("params" , params)
-    //console.log("id inside index of post" , auth.user?.id)
-    const id = auth.user!.id
-    const data = await posts.query().where((q) => {
-      q.where('senderid', id).orWhere('receiverid', id)
-    })
-    return response.json({
-      message: 'Posts fetched successfully for the logged user',
-      data,
-    })
+  public async index({ auth }: HttpContext) {
+  console.log("inside index of post controller")
+  const id = auth.user!.id
+  console.log(id)
+  const data = await posts.query()
+  .leftJoin('users as sender', 'posts.senderid', 'sender.id')
+  .leftJoin('users as receiver', 'posts.receiverid', 'receiver.id')
+  .select(
+    'posts.*',
+    'sender.id as sender_id',
+    'sender.full_name as sender_name',
+    'receiver.id as receiver_id',
+    'receiver.full_name as receiver_name'
+  );
+  const mappedData = data.map(post => ({
+  ...post.$attributes,
+  sender: {
+    id: post.$extras.sender_id,
+    name: post.$extras.sender_name
+  },
+  receiver: {
+    id: post.$extras.receiver_id,
+    name: post.$extras.receiver_name
   }
+}));
+//  const data = await posts.query()
+//     .where('senderid', id)
+//     .orWhere('receiverid', id)
+//     .preload('sender')
+//     .preload('receiver');    
+  console.log(data)
+  return {
+    message: 'Posts fetched successfully for the logged user',
+    data : mappedData,
+
+  }
+}
+
   public async update({ request, response, bouncer, params }: HttpContext) {
     //console.log('inside update post')
     //console.log("id from params :",params.id)
@@ -78,6 +104,7 @@ export default class PostsController {
     //   })
     // }
   }
+  
 
   public async show({params, bouncer }: HttpContext) {
     //console.log('Inside post show by id')
@@ -90,7 +117,7 @@ export default class PostsController {
     await bouncer.authorize('viewpost', post)
     //console.log('Authorization completed')
     const data = await posts.find(validatedata.id)
-    return data
+    return {success:true,data}
   }
 
   public async showbyReceiver({ response, params, auth }: HttpContext) {

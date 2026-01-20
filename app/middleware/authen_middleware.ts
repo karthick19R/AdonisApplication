@@ -4,7 +4,7 @@ import type { NextFn } from '@adonisjs/core/types/http'
 export default class UserAuthenMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     const id = ctx.params.id
-    console.log("Inside User Id verification Auth middleware")
+    //console.log("Inside User Id verification Auth middleware")
     //console.log(id)
     //console.log(ctx.userid)
     if(!(id == ctx.userid)){
@@ -14,15 +14,13 @@ export default class UserAuthenMiddleware {
       })
     }
     /**
-     * Middleware logic goes here (before the next call)
-     */
-    //console.log(ctx)
-
-    /**
      * Call next method in the pipeline and return its output
      */
     const output = await next()
+    console.log(output)
+    console.log(typeof(output))
     return output
   }
   
 }
+

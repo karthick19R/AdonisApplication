@@ -1,17 +1,16 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-
 export default class extends BaseSchema {
-  protected tableName = 'admins'
+  protected tableName = 'payment'
 
   async up() {
     this.schema.alterTable(this.tableName, (table) => {
-      table.renameColumn('name','fullName')
+      table.boolean('status')
     })
   }
 
   async down() {
-    this.schema.alterTable(this.tableName,(table)=>{
-      table.renameColumn('fullName','name')
+    this.schema.alterTable(this.tableName,(table) =>{
+      table.dropColumn('status')
     })
   }
 }

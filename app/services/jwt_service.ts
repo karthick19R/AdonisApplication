@@ -10,4 +10,4 @@ export class JwtService {
     return jwt.verify(token, jwtconfig.secret)
   }
 }
-
+console.log()

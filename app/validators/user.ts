@@ -1,12 +1,14 @@
-import vine, { SimpleMessagesProvider } from '@vinejs/vine'
+import vine from '@vinejs/vine'
 
 export const userValidatorLogin = vine.compile(
   vine.object({
-    email: vine.string().email().exists({
-      table :'users',
-      column :'email'
-    }),
-    password: vine.string().trim().escape().minLength(8)
+    email: vine.string().email(),
+    // .exists({
+    //   table :'users',
+    //   column :'email'
+    // }),
+    password: vine.string().trim().escape()
+    //.minLength(8)
   }),
 )
 export const signupvalidator = vine.compile(
@@ -17,8 +19,8 @@ export const signupvalidator = vine.compile(
           if(user)return false
           return true
         }),
-        password : vine.string().minLength(8).
-        regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/).escape()
+        password : vine.string()
+       .minLength(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/).escape()
     })
 )
 

@@ -12,10 +12,11 @@ export const createPostValidator = vine.compile(
     content : vine.string().trim().escape()
   })
 )
+
 export const postFilterValidator = vine.compile(
   vine.object({
     id : vine.number().optional(),
-    date : vine.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
+    date : vine.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()//try date
   }
   )
 )
@@ -45,3 +46,4 @@ export const postupdatevalidator = vine.compile(
 
   )
 )
+

@@ -13,4 +13,3 @@ export default class Logger {
     console.log('Request finished')
   }
 }
-

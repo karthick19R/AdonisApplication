@@ -1,14 +1,12 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'posts'
+  protected tableName = 'alter_posts_add_cascade_to_users'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
-      table.bigInteger('senderid').unsigned().references('id').inTable('users').onDelete('CASCADE')
-      table.bigInteger('receiverid').unsigned().references('id').inTable('users').onDelete('CASCADE')
-      table.string('content')
+
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })
