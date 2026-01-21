@@ -15,9 +15,9 @@ export default class HttpExceptionHandler extends ExceptionHandler {
     if (error instanceof AdonisErrors.E_ROUTE_NOT_FOUND) {
       return ctx.response.status(404).json({
         success: false,
-        message: 'Data not found',
+        message: 'Bad Api call',
         error: error.message,
-        stack : "error.stack"
+        //stack : error.stack
       })
     }
 

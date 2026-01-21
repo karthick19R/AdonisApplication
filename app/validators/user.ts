@@ -2,11 +2,11 @@ import vine from '@vinejs/vine'
 
 export const userValidatorLogin = vine.compile(
   vine.object({
-    email: vine.string().email(),
-    // .exists({
-    //   table :'users',
-    //   column :'email'
-    // }),
+    email: vine.string().email()
+    .exists({
+      table :'users',
+      column :'email'
+    }),
     password: vine.string().trim().escape()
     //.minLength(8)
   }),
@@ -47,6 +47,8 @@ export const updateuserValidator = vine.compile(
       const ex = await db.from('users').where('email', val).first()
       if(ex) return false
       return true
-    }).optional()
+    }).optional(),
+    password : vine.string()
+      .minLength(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/).escape().optional()
   })
 )
