@@ -8,7 +8,7 @@ export default class AdminController {
         console.log("Inside admin index")
         return await Admin.all()
     }
-    public async store({request,response}:HttpContext){
+    public async store({request}:HttpContext){
         const V_data = await request.validateUsing(signupvalidator)
         const user = await Admin.create(V_data)
         return {

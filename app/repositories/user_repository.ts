@@ -1,7 +1,9 @@
 import User from '#models/user'
 import { JwtService } from '#services/jwt_service'
 import { Exception } from '@adonisjs/core/exceptions'
-
+import Post from '#models/post'
+import { DateTime } from 'luxon'
+import db from '@adonisjs/lucid/services/db'
 export default class UserRepository {
   public async getdetail(id: number) {
     return User.findOrFail(id).catch(() => {
@@ -11,7 +13,7 @@ export default class UserRepository {
   }
 
   public async updateuser(id:number,data: { fullName?: string, email?: string,password ?: string}) {
-    const user = await User.findOrFail(id).catch((err)=>{
+    const user = await User.findOrFail(id).catch(()=>{
             throw new Exception("No user found",{status:404})
     })
     const newData : Record<string, string> = {}
@@ -30,9 +32,8 @@ export default class UserRepository {
     const user = await User.findOrFail(id).catch(()=>{
         throw "User not found"
     })
-    const res =await user.delete()
-    console.log(res)
-    return res
+    await user.delete().catch(()=>{ throw "Error while deleting User"})
+    return true
   }
    
   public async getUserByEmail(email :string){
@@ -51,8 +52,35 @@ export default class UserRepository {
      })
     const token = await User.accessTokens.create(user).catch(()=>{throw "Error while generating OAT token"})
     console.log(token)
-    const jwtToken = await JwtService.tokenCreate(user.id , user.email)
+    const jwtToken =  JwtService.tokenCreate(user.id , user.email)
     return { OAT :token.value!.release(), jwtToken} 
 
   }
-}
+  public async cleanupInactiveUsers(days : number){
+    const cutoffDate = DateTime.now().minus({ days }).toSQL()!
+    const activeUserIdsQuery = Post.query()
+      .select('senderid')
+      .where('created_at', '>=', cutoffDate)
+      .union((q) => {
+        q.select('receiverid')
+          .from('posts')
+          .where('created_at', '>=', cutoffDate)
+      })
+
+    const inactiveUsers = await User.query()
+      .whereNotIn('id', activeUserIdsQuery)
+
+    const count = inactiveUsers.length
+
+    await db.transaction(async (trx) => {
+      for (const user of inactiveUsers) {
+        user.useTransaction(trx)
+        await user.delete()
+      }
+    })
+
+    return count
+  }
+
+  }
+

@@ -1,9 +1,9 @@
 import { HttpContext } from '@adonisjs/core/http'
-import User from '../models/user.js'
 import { signupvalidator, checkid, updateuserValidator, checkemail ,userValidatorLogin } from '../validators/user.js'
-import { JwtService } from '#services/jwt_service'
 import UserDomain from '../domains/user_domain.js'
-
+import UserRepository from '../repositories/user_repository.js';
+import User from '#models/user';
+import { Exception } from '@adonisjs/core/exceptions';
    interface userData {
     id : number,
     email :string,
@@ -12,17 +12,23 @@ import UserDomain from '../domains/user_domain.js'
 
 export default class UsersController {
   private userDomain : UserDomain;
+  private userRepo : UserRepository
   constructor(){
     this.userDomain = new UserDomain()
+    this.userRepo = new UserRepository()
+
   }
  
   public async getdetail(ctx: HttpContext) {
       //console.log("Inside user controller getdetail"); 
       const validId = await checkid.validate({id : ctx.userid})
-      const data : userData = await this.userDomain.getDetail(validId.id);
+      const data : User = await this.userRepo.getdetail(validId.id)
+      const result:userData = await this.userDomain.getDetail(data).catch(()=>{
+        throw new Exception("Invalid User data",{status:400})
+      })
       return {  
         success : true,
-        data
+        data : result 
       }
   }
 
@@ -30,7 +36,8 @@ export default class UsersController {
       //console.log("Inside user update")
       const validId= await checkid.validate({id:ctx.userid})
       const validData = await ctx.request.validateUsing(updateuserValidator)
-      const result = await this.userDomain.updateUser(validId.id,validData)
+      const data:User = await this.userRepo.updateuser(validId.id,validData)
+      const result:userData = await this.userDomain.updateUser(data)
       return {
         success : true,
         status : "user data updated successfully",
@@ -39,8 +46,9 @@ export default class UsersController {
   }
 
   public async createuser({ request }: HttpContext) {
-      const validatedData = await request.validateUsing(signupvalidator)
-      const user = await this.userDomain.createUser(validatedData).catch(()=>{
+      const validatedData:{fullName : string,email : string ,password :string} = await request.validateUsing(signupvalidator)
+      const userdata:User = await this.userRepo.createUser(validatedData)
+      const user:userData = await this.userDomain.createUser(userdata).catch(()=>{
         throw "Error while creating user"
       })
       return {
@@ -52,83 +60,37 @@ export default class UsersController {
 
   public async deleteUser(ctx: HttpContext) {
       const validId = await checkid.validate({id :ctx.userid})
-      const result = this.userDomain.deleteuser(validId.id)
+      const del : boolean= await this.userRepo.deleteUser(validId.id)
+      const result = this.userDomain.deleteuser(del)
       return {
-        success : true,
+        success : result,
         message: 'User deleted successfully',
-        result
       }
   }
 
  
   public async getUserByEmail({ params}: HttpContext) {
-    // try {
+
       const validData = await checkemail.validate(params)
-      const data = await this.userDomain.getUserByEmail(validData.email)
+      const userdata:User = await this.userRepo.getUserByEmail(validData.email)
+      const data = await this.userDomain.getUserByEmail(userdata).catch(()=>{
+        throw new Exception("User Data is Invalid",{status : 400})
+      })
       return {
         success : true,
         data
       }
-      //const data = await User.findByOrFail('email', validData.email)
-    //   return response.json({
-    //     status: ' user fetched Successful',
-    //     data,
-    //   })
-    // } catch (error) {
-    //   return response.status(404).json({
-    //     message: 'User not found or invalid data',
-    //   })
      
   }
-  public async login({ request, response }: HttpContext) {
-     //try {
-      //console.log(request.only(['email', 'password']))
+  public async login({ request }: HttpContext) {
+    
       const data :{email : string, password :string}= await request.validateUsing(userValidatorLogin)
-      //console.log(data)
-     // const { email, password } = data
-    //  console.log("After  error in validation")
-      const res = await this.userDomain.login(data)
+      const usertoken = await this.userRepo.login(data.email,data.password)
+      const res = await this.userDomain.login(usertoken)
       return {
         success : true ,
         message : "User login successful",
         data : res
       }
-      //const user = await User.findByOrFail('email', data.email)
-      // .catch((err)=>{
-      //     console.log("Error in findby")
-      //     return response.status(400).json({
-      //         success: false,
-      //         message: 'Invalid email',
-      //         error :err
-      //       })
-      //    // return response.json({message : "login validation failed ",err})
-      // })     
-      //if (!user) return response.status(400).json({msg:'User not found'})
-      //const res = await User.verifyCredentials(data.email, data.password)
-      //  .catch(()=>{
-      //    console.log("Error in verification of  login")
-      //     return response.status(401).json({
-      //         success: false,
-      //         message: 'Invalid credentials',
-      //       })
-  //  })
-      //console.log(`user :${user}`)
-      //const token = await User.accessTokens.create(user)
-
-      // console.log(`token :${token.value!.release()}`)
-      // if (!res) return 'invalid credentials'
-      // //creating Jwt Token
-      // const jwttoken = JwtService.sign({ id: res.id, email:data.email })
-      // console.log(jwttoken)
-      // return response.json({
-      //   status: 'Logged in successful',
-      //   jwttoken,
-      //   oat: token.value!.release(),
-      // })
-    //  } catch (err) {
-    //   return response.status(404).json({
-    //      message: 'Login Failed or try after some times',
-    //    })
-    //  }
   }
 }

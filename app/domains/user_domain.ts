@@ -1,38 +1,41 @@
+import User from "#models/user";
 import UserRepository from "../repositories/user_repository.js";
 
 export default class UserDomain{
-    private userRepo : UserRepository;
-
-    constructor(){
-        this.userRepo = new UserRepository()
-    }
-
-    public async getDetail(id :number){
+    userRepo = new UserRepository()
+    public async getDetail(user : User){
        // console.log("Inside getdetail of user domain")
-        const data=await this.userRepo.getdetail(id)
-        return {fullName : data.fullName,email : data.email,id : data.id}
+       return {id :user.id,email : user.email,fullName : user.fullName}
+
     }
 
-    public async updateUser(id : number,data :{ fullName?: string | undefined,email?: string | undefined,password?: string | undefined}){
+    public async updateUser(data : User){
         //console.log("Inside user domain updateuser")
-        return this.userRepo.updateuser(id,data)
+        return {
+            id :data.id,
+            fullName : data.fullName,
+            email : data.email
+        }
     }
 
-    public async createUser(data : { fullName : string , email : string , password : string}){
-        return this.userRepo.createUser(data)
+    public async createUser(data : User){
+        return {id :data.id,fullName : data.fullName , email : data.email}
     }
 
-    public async deleteuser(id:number){
-        return this.userRepo.deleteUser(id)
+    public async deleteuser(flag : boolean){
+        return flag
     }
 
-    public async getUserByEmail(userEmail : string){
-        const {fullName ,email,id}= await this.userRepo.getUserByEmail(userEmail)
-        return {fullName ,email,id}
+    public async getUserByEmail(user : User){
+        return {fullName :user.fullName ,email : user.email,id : user.id}
     }
-
-    public async login(data :{email : string , password : string}){
-        const res : {OAT :string ,jwtToken :string} = await this.userRepo.login(data.email,data.password)
-        return res
+    public async login(data :{OAT : string , jwtToken : string}){
+        return data
+    }
+    public async deleteInActive(days : number){
+        if (days <= 0) {
+      throw new Error('Days must be greater than zero')
+    }
+    return days
     }
 }

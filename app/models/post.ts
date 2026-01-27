@@ -12,7 +12,7 @@ export default class Post extends BaseModel {
   @column()
   declare senderid :number
   @column()
-  declare content : String
+  declare content : string
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
